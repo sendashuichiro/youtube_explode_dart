@@ -232,10 +232,17 @@ class _InitialData extends InitialData {
     }
 
     if (isLockup) {
+      // `lockupViewModel`の実際のメタデータは
+      // `metadata/lockupMetadataViewModel/...`配下にネストされている
+      // (旧`metadata/primaryText/...`直下ではない)。views/upload date は
+      // `metadata/lockupMetadataViewModel/metadata/contentMetadataViewModel/
+      // metadataRows/0/metadataParts`の0番目・1番目にそれぞれ入る。
       return ChannelVideo(
         VideoId(video.getJson<String>(
             'rendererContext/commandContext/onTap/innertubeCommand/watchEndpoint/videoId')!),
-        video.getJson<String>('metadata/primaryText/content') ?? '',
+        video.getJson<String>(
+                'metadata/lockupMetadataViewModel/title/content') ??
+            '',
         video
                 .getJson<String>(
                     'imageOverlays/0/thumbnailOverlayTimeStatusRenderer/text/simpleText')
@@ -244,8 +251,14 @@ class _InitialData extends InitialData {
         video.getJson<String>(
                 'thumbnailViewModel/thumbnailViewModel/image/sources/0/url') ??
             '',
-        video.getJson<String>('metadata/metadataParts/1/text/content') ?? '',
-        video.getJson<String>('metadata/metadataText/content').parseInt() ?? 0,
+        video.getJson<String>(
+                'metadata/lockupMetadataViewModel/metadata/contentMetadataViewModel/metadataRows/0/metadataParts/1/text/content') ??
+            '',
+        video
+                .getJson<String>(
+                    'metadata/lockupMetadataViewModel/metadata/contentMetadataViewModel/metadataRows/0/metadataParts/0/text/content')
+                .parseInt() ??
+            0,
       );
     }
 

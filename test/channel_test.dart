@@ -85,6 +85,11 @@ void main() {
     final videos =
         await yt!.channels.getUploadsFromPage('UC6biysICWOJ-C3P4Tyeggzg');
     expect(videos, isNotEmpty);
+    // `lockupViewModel`形式のレスポンスではtitle/uploadDateが
+    // metadata/lockupMetadataViewModel配下にネストされているため、
+    // 誤ったJSONパスを参照すると空文字のまま返ってしまう回帰を防ぐ。
+    expect(videos.first.title, isNotEmpty);
+    expect(videos.first.uploadDateRaw, isNotEmpty);
   });
 
   test('Get next page youtube channel uploads page', () async {
