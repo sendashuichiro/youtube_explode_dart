@@ -21,6 +21,19 @@ void main() {
     expect(videos, isNotEmpty);
   });
 
+  test('Search a query whose results include a runs-based view count',
+      () async {
+    // Some search results render viewCountText as a `runs` array instead of
+    // `simpleText` (and some `channelRenderer`/`videoRenderer` entries rely on
+    // it for view/live status). `firstOrNull`/`elementAtSafe`/`first` return a
+    // `dynamic` element, so parsing must cast it to a map before calling the
+    // `getT` extension - otherwise the call is dispatched dynamically and
+    // throws NoSuchMethodError for every result, not just the video that
+    // exercises the runs path (tv-youtube-player#68 regressed on this).
+    final videos = await yt!.search.search('ニュース 今日');
+    expect(videos, isNotEmpty);
+  });
+
   test('Search with no results', () async {
     final videos = await yt!.search.search(
       List.generate(1300, (_) => letters[rnd.nextInt(letters.length)]).join(),
