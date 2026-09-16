@@ -166,23 +166,35 @@ extension StringUtility2 on String? {
     return false;
   }
 
-  /// Format: {quantity} {unit} ago (5 years ago)
+  /// Format: {quantity} {unit} ago (5 years ago). YouTube also renders ended
+  /// live broadcasts and premieres with a leading status word and/or without
+  /// the trailing "ago" (e.g. "Streamed 3 hours ago", "Streamed 2 days").
   DateTime? toDateTime() {
     if (this == null) {
       return null;
     }
 
     var parts = this!.trim().split(' ');
-    if (parts.length == 4) {
-      // Streamed x y ago
+
+    // Drop a trailing "ago" if present; some renderings omit it.
+    if (parts.isNotEmpty && parts.last == 'ago') {
+      parts = parts.sublist(0, parts.length - 1);
+    }
+
+    // Drop a leading non-numeric status word (e.g. "Streamed", "Premiered")
+    // that isn't part of the "{quantity} {unit}" pattern.
+    if (parts.length == 3 && int.tryParse(parts.first) == null) {
       parts = parts.skip(1).toList();
     }
 
-    if (parts.length != 3) {
+    if (parts.length != 2) {
       return null;
     }
 
-    final qty = int.parse(parts.first);
+    final qty = int.tryParse(parts.first);
+    if (qty == null) {
+      return null;
+    }
 
     // Try to get the unit
     final unit = parts[1];
