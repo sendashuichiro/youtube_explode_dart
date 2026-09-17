@@ -77,6 +77,22 @@ class VideoClient {
   Future<Video> get(dynamic videoId) async =>
       _getVideoFromWatchPage(VideoId.fromString(videoId));
 
+  /// Checks whether the specified video is a currently active live stream.
+  ///
+  /// Unlike [get], this only parses the watch page's player response and
+  /// does not require `ytInitialData` to be extractable from the page.
+  /// Some live streams (e.g. long-running 24/7 broadcasts) fail to expose a
+  /// parseable `ytInitialData`, which makes [get] throw a
+  /// [TransientFailureException] even though the player response itself
+  /// (and therefore the live status) was fetched successfully.
+  Future<bool> checkIsLive(dynamic videoId) async {
+    final watchPage = await WatchPage.get(
+      _httpClient,
+      VideoId.fromString(videoId).value,
+    );
+    return watchPage.playerResponse?.isLive ?? false;
+  }
+
   /// Returns a [RelatedVideosList] or null if no related videos were found.
   Future<RelatedVideosList?> getRelatedVideos(Video video) async {
     // Try 3 times before giving up
