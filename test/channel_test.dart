@@ -105,4 +105,21 @@ void main() {
         videoType: VideoType.shorts);
     expect(shorts, isNotEmpty);
   });
+
+  test(
+    'Get live (Live tab) videos of a youtube channel from the uploads page',
+    () async {
+      // tv-youtube-player#110: this channel has no "Videos" tab at all
+      // (only Home/Live/Posts) and requesting VideoType.normal always fell
+      // back to the Home tab's shelfRenderer, which channel_upload_page.dart
+      // cannot parse (FatalFailureException). VideoType.live requests
+      // `/streams`, which YouTube resolves to the actual "Live" tab.
+      final streams = await yt!.channels.getUploadsFromPage(
+          'UCuaAmWq07l6Rtz7ZhzHlHSw',
+          videoType: VideoType.live);
+      expect(streams, isNotEmpty);
+      expect(streams.first.title, isNotEmpty);
+      expect(streams.first.uploadDateRaw, isNotEmpty);
+    },
+  );
 }
