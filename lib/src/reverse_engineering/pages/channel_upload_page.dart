@@ -199,7 +199,8 @@ class _InitialData extends InitialData {
       video = content.getJson<JsonMap>(
         'richItemRenderer/content/${type.youtubeRenderText}',
       );
-      if (video == null && type == VideoType.normal) {
+      if (video == null &&
+          (type == VideoType.normal || type == VideoType.live)) {
         video = content
             .getJson<JsonMap>('richItemRenderer/content/lockupViewModel');
         if (video != null &&
