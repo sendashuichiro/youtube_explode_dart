@@ -107,6 +107,19 @@ void main() {
     expect(page.uploads.map((video) => video.isLive), [true, false]);
   });
 
+  test('propagates the current ABC News Live badge through getUploadsFromPage',
+      () async {
+    final videos = await yt!.channels.getUploadsFromPage(
+      'UCBi2mrWuNuyYy4gbM6fU18Q',
+      videoType: VideoType.live,
+    );
+    final live = videos.firstWhere(
+      (video) => video.title.contains('ABC News Live - 24/7'),
+    );
+
+    expect(live.isLive, isTrue);
+  }, skip: skipGH);
+
   test('Get metadata of a channel', () async {
     const channelUrl =
         'https://www.youtube.com/channel/UCEnBXANsKmyj2r9xVyKoDiQ';
