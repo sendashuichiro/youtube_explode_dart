@@ -260,6 +260,7 @@ class _InitialData extends InitialData {
                     'metadata/lockupMetadataViewModel/metadata/contentMetadataViewModel/metadataRows/0/metadataParts/0/text/content')
                 .parseInt() ??
             0,
+        isLive: _hasLiveBadge(video),
       );
     }
 
@@ -284,6 +285,30 @@ class _InitialData extends InitialData {
       video.getJson<String>('publishedTimeText/simpleText') ?? '',
       video.getJson<String>('viewCountText/simpleText').parseInt() ?? 0,
     );
+  }
+
+  bool _hasLiveBadge(JsonMap video) {
+    final overlays = video.getJson<List<dynamic>>(
+      'contentImage/thumbnailViewModel/overlays',
+    );
+    if (overlays == null) return false;
+    for (final overlay in overlays) {
+      if (overlay is! JsonMap) continue;
+      final badges = overlay.getJson<List<dynamic>>(
+        'thumbnailOverlayBadgeViewModel/thumbnailBadges',
+      );
+      if (badges == null) continue;
+      for (final badge in badges) {
+        if (badge is! JsonMap) continue;
+        if (badge.getJson<String>(
+              'thumbnailBadgeViewModel/badgeStyle',
+            ) ==
+            'THUMBNAIL_OVERLAY_BADGE_STYLE_LIVE') {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 }
 
