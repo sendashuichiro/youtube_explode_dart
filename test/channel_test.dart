@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:test/test.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
+import 'package:youtube_explode_dart/src/reverse_engineering/pages/channel_upload_page.dart';
 
 import 'skip_gh.dart';
 
@@ -24,6 +27,84 @@ void main() {
     );
 
     expect(video.isLive, isFalse);
+  });
+
+  test('parses the Live badge from the lockup bottom overlay', () {
+    final raw = '<script>var ytInitialData = ${jsonEncode({
+          'contents': {
+            'twoColumnBrowseResultsRenderer': {
+              'tabs': [
+                {
+                  'tabRenderer': {
+                    'selected': true,
+                    'content': {
+                      'richGridRenderer': {
+                        'contents': [
+                          for (final entry in [
+                            [
+                              'dQw4w9WgXcQ',
+                              'THUMBNAIL_OVERLAY_BADGE_STYLE_LIVE'
+                            ],
+                            [
+                              'M7lc1UVf-VE',
+                              'THUMBNAIL_OVERLAY_BADGE_STYLE_DEFAULT'
+                            ],
+                          ])
+                            {
+                              'richItemRenderer': {
+                                'content': {
+                                  'lockupViewModel': {
+                                    'contentType': 'LOCKUP_CONTENT_TYPE_VIDEO',
+                                    'rendererContext': {
+                                      'commandContext': {
+                                        'onTap': {
+                                          'innertubeCommand': {
+                                            'watchEndpoint': {
+                                              'videoId': entry[0]
+                                            },
+                                          },
+                                        },
+                                      },
+                                    },
+                                    'metadata': {
+                                      'lockupMetadataViewModel': {
+                                        'title': {'content': entry[0]},
+                                      },
+                                    },
+                                    'contentImage': {
+                                      'thumbnailViewModel': {
+                                        'overlays': [
+                                          {
+                                            'thumbnailBottomOverlayViewModel': {
+                                              'badges': [
+                                                {
+                                                  'thumbnailBadgeViewModel': {
+                                                    'badgeStyle': entry[1],
+                                                  },
+                                                },
+                                              ],
+                                            },
+                                          },
+                                        ],
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                        ],
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        })};</script>';
+
+    final page = ChannelUploadPage.parse(raw, 'channel-id', VideoType.live);
+
+    expect(page.uploads.map((video) => video.isLive), [true, false]);
   });
 
   test('Get metadata of a channel', () async {
