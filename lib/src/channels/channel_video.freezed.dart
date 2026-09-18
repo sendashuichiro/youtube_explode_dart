@@ -1,6 +1,5 @@
-// dart format width=80
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// coverage:ignore-file
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
@@ -33,6 +32,7 @@ mixin _$ChannelVideo {
 
   /// Video view count.
   int get videoViews;
+  bool get isLive;
 
   /// Create a copy of ChannelVideo
   /// with the given fields replaced by the non-null parameter values.
@@ -57,16 +57,17 @@ mixin _$ChannelVideo {
             (identical(other.videoUploadDate, videoUploadDate) ||
                 other.videoUploadDate == videoUploadDate) &&
             (identical(other.videoViews, videoViews) ||
-                other.videoViews == videoViews));
+                other.videoViews == videoViews) &&
+            (identical(other.isLive, isLive) || other.isLive == isLive));
   }
 
   @override
   int get hashCode => Object.hash(runtimeType, videoId, videoTitle,
-      videoDuration, videoThumbnail, videoUploadDate, videoViews);
+      videoDuration, videoThumbnail, videoUploadDate, videoViews, isLive);
 
   @override
   String toString() {
-    return 'ChannelVideo(videoId: $videoId, videoTitle: $videoTitle, videoDuration: $videoDuration, videoThumbnail: $videoThumbnail, videoUploadDate: $videoUploadDate, videoViews: $videoViews)';
+    return 'ChannelVideo(videoId: $videoId, videoTitle: $videoTitle, videoDuration: $videoDuration, videoThumbnail: $videoThumbnail, videoUploadDate: $videoUploadDate, videoViews: $videoViews, isLive: $isLive)';
   }
 }
 
@@ -82,7 +83,8 @@ abstract mixin class $ChannelVideoCopyWith<$Res> {
       Duration videoDuration,
       String videoThumbnail,
       String videoUploadDate,
-      int videoViews});
+      int videoViews,
+      bool isLive});
 
   $VideoIdCopyWith<$Res> get videoId;
 }
@@ -105,6 +107,7 @@ class _$ChannelVideoCopyWithImpl<$Res> implements $ChannelVideoCopyWith<$Res> {
     Object? videoThumbnail = null,
     Object? videoUploadDate = null,
     Object? videoViews = null,
+    Object? isLive = null,
   }) {
     return _then(_self.copyWith(
       videoId: null == videoId
@@ -131,6 +134,10 @@ class _$ChannelVideoCopyWithImpl<$Res> implements $ChannelVideoCopyWith<$Res> {
           ? _self.videoViews
           : videoViews // ignore: cast_nullable_to_non_nullable
               as int,
+      isLive: null == isLive
+          ? _self.isLive
+          : isLive // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 
@@ -145,11 +152,214 @@ class _$ChannelVideoCopyWithImpl<$Res> implements $ChannelVideoCopyWith<$Res> {
   }
 }
 
+/// Adds pattern-matching-related methods to [ChannelVideo].
+extension ChannelVideoPatterns on ChannelVideo {
+  /// A variant of `map` that fallback to returning `orElse`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>(
+    TResult Function(_ChannelVideo value)? $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _ChannelVideo() when $default != null:
+        return $default(_that);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// Callbacks receives the raw object, upcasted.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case final Subclass2 value:
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>(
+    TResult Function(_ChannelVideo value) $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _ChannelVideo():
+        return $default(_that);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `map` that fallback to returning `null`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>(
+    TResult? Function(_ChannelVideo value)? $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _ChannelVideo() when $default != null:
+        return $default(_that);
+      case _:
+        return null;
+    }
+  }
+
+  /// A variant of `when` that fallback to an `orElse` callback.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>(
+    TResult Function(
+            VideoId videoId,
+            String videoTitle,
+            Duration videoDuration,
+            String videoThumbnail,
+            String videoUploadDate,
+            int videoViews,
+            bool isLive)?
+        $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _ChannelVideo() when $default != null:
+        return $default(
+            _that.videoId,
+            _that.videoTitle,
+            _that.videoDuration,
+            _that.videoThumbnail,
+            _that.videoUploadDate,
+            _that.videoViews,
+            _that.isLive);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// As opposed to `map`, this offers destructuring.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case Subclass2(:final field2):
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>(
+    TResult Function(
+            VideoId videoId,
+            String videoTitle,
+            Duration videoDuration,
+            String videoThumbnail,
+            String videoUploadDate,
+            int videoViews,
+            bool isLive)
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _ChannelVideo():
+        return $default(
+            _that.videoId,
+            _that.videoTitle,
+            _that.videoDuration,
+            _that.videoThumbnail,
+            _that.videoUploadDate,
+            _that.videoViews,
+            _that.isLive);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `when` that fallback to returning `null`
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>(
+    TResult? Function(
+            VideoId videoId,
+            String videoTitle,
+            Duration videoDuration,
+            String videoThumbnail,
+            String videoUploadDate,
+            int videoViews,
+            bool isLive)?
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _ChannelVideo() when $default != null:
+        return $default(
+            _that.videoId,
+            _that.videoTitle,
+            _that.videoDuration,
+            _that.videoThumbnail,
+            _that.videoUploadDate,
+            _that.videoViews,
+            _that.isLive);
+      case _:
+        return null;
+    }
+  }
+}
+
 /// @nodoc
 
 class _ChannelVideo implements ChannelVideo {
   const _ChannelVideo(this.videoId, this.videoTitle, this.videoDuration,
-      this.videoThumbnail, this.videoUploadDate, this.videoViews);
+      this.videoThumbnail, this.videoUploadDate, this.videoViews,
+      {this.isLive = false});
 
   /// Video ID.
   @override
@@ -175,6 +385,9 @@ class _ChannelVideo implements ChannelVideo {
   /// Video view count.
   @override
   final int videoViews;
+  @override
+  @JsonKey()
+  final bool isLive;
 
   /// Create a copy of ChannelVideo
   /// with the given fields replaced by the non-null parameter values.
@@ -199,16 +412,17 @@ class _ChannelVideo implements ChannelVideo {
             (identical(other.videoUploadDate, videoUploadDate) ||
                 other.videoUploadDate == videoUploadDate) &&
             (identical(other.videoViews, videoViews) ||
-                other.videoViews == videoViews));
+                other.videoViews == videoViews) &&
+            (identical(other.isLive, isLive) || other.isLive == isLive));
   }
 
   @override
   int get hashCode => Object.hash(runtimeType, videoId, videoTitle,
-      videoDuration, videoThumbnail, videoUploadDate, videoViews);
+      videoDuration, videoThumbnail, videoUploadDate, videoViews, isLive);
 
   @override
   String toString() {
-    return 'ChannelVideo(videoId: $videoId, videoTitle: $videoTitle, videoDuration: $videoDuration, videoThumbnail: $videoThumbnail, videoUploadDate: $videoUploadDate, videoViews: $videoViews)';
+    return 'ChannelVideo(videoId: $videoId, videoTitle: $videoTitle, videoDuration: $videoDuration, videoThumbnail: $videoThumbnail, videoUploadDate: $videoUploadDate, videoViews: $videoViews, isLive: $isLive)';
   }
 }
 
@@ -226,7 +440,8 @@ abstract mixin class _$ChannelVideoCopyWith<$Res>
       Duration videoDuration,
       String videoThumbnail,
       String videoUploadDate,
-      int videoViews});
+      int videoViews,
+      bool isLive});
 
   @override
   $VideoIdCopyWith<$Res> get videoId;
@@ -251,6 +466,7 @@ class __$ChannelVideoCopyWithImpl<$Res>
     Object? videoThumbnail = null,
     Object? videoUploadDate = null,
     Object? videoViews = null,
+    Object? isLive = null,
   }) {
     return _then(_ChannelVideo(
       null == videoId
@@ -277,6 +493,10 @@ class __$ChannelVideoCopyWithImpl<$Res>
           ? _self.videoViews
           : videoViews // ignore: cast_nullable_to_non_nullable
               as int,
+      isLive: null == isLive
+          ? _self.isLive
+          : isLive // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 

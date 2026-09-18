@@ -13,6 +13,19 @@ void main() {
     yt?.close();
   });
 
+  test('ChannelVideo live status defaults to false', () {
+    final video = ChannelVideo(
+      VideoId('dQw4w9WgXcQ'),
+      'title',
+      Duration.zero,
+      'https://example.com/thumb.jpg',
+      '',
+      0,
+    );
+
+    expect(video.isLive, isFalse);
+  });
+
   test('Get metadata of a channel', () async {
     const channelUrl =
         'https://www.youtube.com/channel/UCEnBXANsKmyj2r9xVyKoDiQ';
@@ -120,6 +133,10 @@ void main() {
       expect(streams, isNotEmpty);
       expect(streams.first.title, isNotEmpty);
       expect(streams.first.uploadDateRaw, isNotEmpty);
+      final liveVideos = streams.where((video) => video.isLive).toList();
+      if (liveVideos.isNotEmpty) {
+        expect(liveVideos.every((video) => video.isLive), isTrue);
+      }
     },
   );
 }

@@ -8,23 +8,26 @@ part 'channel_video.freezed.dart';
 @freezed
 abstract class ChannelVideo with _$ChannelVideo {
   const factory ChannelVideo(
-    /// Video ID.
-    VideoId videoId,
 
-    /// Video title.
-    String videoTitle,
+      /// Video ID.
+      VideoId videoId,
 
-    /// Video duration, this is always zero for shorts.
-    Duration videoDuration,
+      /// Video title.
+      String videoTitle,
 
-    /// Video thumbnail
-    String videoThumbnail,
+      /// Video duration, this is always zero for shorts.
+      Duration videoDuration,
 
-    /// Video upload date. This is always empty for shorts.
-    /// Formatted like 10 hours ago
-    String videoUploadDate,
+      /// Video thumbnail
+      String videoThumbnail,
 
-    /// Video view count.
-    int videoViews,
-  ) = _ChannelVideo;
+      /// Video upload date. This is always empty for shorts.
+      /// Formatted like 10 hours ago
+      String videoUploadDate,
+
+      /// Video view count.
+      int videoViews,
+
+      /// Whether the channel Live-tab response marks this video as live now.
+      {@Default(false) bool isLive}) = _ChannelVideo;
 }
