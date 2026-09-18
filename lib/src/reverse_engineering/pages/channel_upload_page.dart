@@ -295,7 +295,7 @@ class _InitialData extends InitialData {
     for (final overlay in overlays) {
       if (overlay is! JsonMap) continue;
       final badges = overlay.getJson<List<dynamic>>(
-        'thumbnailOverlayBadgeViewModel/thumbnailBadges',
+        'thumbnailBottomOverlayViewModel/badges',
       );
       if (badges == null) continue;
       for (final badge in badges) {
