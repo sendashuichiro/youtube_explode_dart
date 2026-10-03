@@ -64,6 +64,11 @@ void main() {
       expect('5x ago'.toDateTime(), isNull);
     });
 
+    test('returns null instead of throwing for an unknown unit', () {
+      expect('5 fortnights ago'.toDateTime(), isNull);
+      expect('Streamed 2 eons ago'.toDateTime(), isNull);
+    });
+
     test('returns null for null input', () {
       expect((null as String?).toDateTime(), isNull);
     });

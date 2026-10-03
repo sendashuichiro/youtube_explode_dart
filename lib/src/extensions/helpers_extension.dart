@@ -170,6 +170,8 @@ extension StringUtility2 on String? {
   /// "3mo ago" form. YouTube also renders ended
   /// live broadcasts and premieres with a leading status word and/or without
   /// the trailing "ago" (e.g. "Streamed 3 hours ago", "Streamed 2 days").
+  ///
+  /// Returns null for any text it cannot interpret instead of throwing.
   DateTime? toDateTime() {
     if (this == null) {
       return null;
@@ -219,7 +221,7 @@ extension StringUtility2 on String? {
     // Try to get the unit
     final unit = parts[1];
 
-    final time = switch (unit) {
+    final Duration? time = switch (unit) {
       _ when unit.startsWith('second') => Duration(seconds: qty),
       _ when unit.startsWith('minute') => Duration(minutes: qty),
       _ when unit.startsWith('hour') => Duration(hours: qty),
@@ -227,10 +229,14 @@ extension StringUtility2 on String? {
       _ when unit.startsWith('week') => Duration(days: qty * 7),
       _ when unit.startsWith('month') => Duration(days: qty * 30),
       _ when unit.startsWith('year') => Duration(days: qty * 365),
-      _ => throw StateError("Couldn't parse $unit unit of time. "
-          'Please report this to the project page!')
+      // An unknown unit means YouTube changed its wording. Throwing here would
+      // fail the whole video list over one date, so report "unknown" instead.
+      _ => null,
     };
 
+    if (time == null) {
+      return null;
+    }
     return DateTime.now().subtract(time);
   }
 
