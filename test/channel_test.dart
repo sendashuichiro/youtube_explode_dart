@@ -107,6 +107,128 @@ void main() {
     expect(page.uploads.map((video) => video.isLive), [true, false]);
   });
 
+  test('parses duration, upload date and views from a lockup item', () {
+    Map<String, dynamic> lockup(
+      String id,
+      List<List<String>> metadataRows, {
+      List<Map<String, dynamic>> badges = const [],
+    }) =>
+        {
+          'richItemRenderer': {
+            'content': {
+              'lockupViewModel': {
+                'contentType': 'LOCKUP_CONTENT_TYPE_VIDEO',
+                'rendererContext': {
+                  'commandContext': {
+                    'onTap': {
+                      'innertubeCommand': {
+                        'watchEndpoint': {'videoId': id},
+                      },
+                    },
+                  },
+                },
+                'metadata': {
+                  'lockupMetadataViewModel': {
+                    'title': {'content': id},
+                    'metadata': {
+                      'contentMetadataViewModel': {
+                        'metadataRows': [
+                          for (final row in metadataRows)
+                            {
+                              'metadataParts': [
+                                for (final text in row)
+                                  {
+                                    'text': {'content': text},
+                                  },
+                              ],
+                            },
+                        ],
+                      },
+                    },
+                  },
+                },
+                'contentImage': {
+                  'thumbnailViewModel': {
+                    'overlays': [
+                      {
+                        'thumbnailBottomOverlayViewModel': {'badges': badges},
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+          },
+        };
+
+    Map<String, dynamic> badge(String text, [String? style]) => {
+          'thumbnailBadgeViewModel': {
+            'text': text,
+            if (style != null) 'badgeStyle': style,
+          },
+        };
+
+    final raw = '<script>var ytInitialData = ${jsonEncode({
+          'contents': {
+            'twoColumnBrowseResultsRenderer': {
+              'tabs': [
+                {
+                  'tabRenderer': {
+                    'selected': true,
+                    'content': {
+                      'richGridRenderer': {
+                        'contents': [
+                          lockup(
+                            'dQw4w9WgXcQ',
+                            [
+                              ['123 views', '5y ago'],
+                            ],
+                            badges: [badge('1:04:51')],
+                          ),
+                          // Collaboration videos prepend a channel list row.
+                          lockup(
+                            'M7lc1UVf-VE',
+                            [
+                              ['Channel A and 2 more'],
+                              ['456 views', 'Streamed 3w ago'],
+                            ],
+                            badges: [
+                              badge(
+                                'LIVE',
+                                'THUMBNAIL_OVERLAY_BADGE_STYLE_LIVE',
+                              ),
+                              badge('2:35'),
+                            ],
+                          ),
+                          lockup('9bZkp7q19f0', [
+                            ['No info'],
+                          ]),
+                        ],
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        })};</script>';
+
+    final uploads =
+        ChannelUploadPage.parse(raw, 'channel-id', VideoType.normal).uploads;
+
+    expect(uploads.map((video) => video.videoDuration), [
+      const Duration(hours: 1, minutes: 4, seconds: 51),
+      const Duration(minutes: 2, seconds: 35),
+      Duration.zero,
+    ]);
+    expect(uploads.map((video) => video.videoUploadDate), [
+      '5y ago',
+      'Streamed 3w ago',
+      '',
+    ]);
+    expect(uploads.map((video) => video.videoViews), [123, 456, 0]);
+  });
+
   test('propagates the current ABC News Live badge through getUploadsFromPage',
       () async {
     final videos = await yt!.channels.getUploadsFromPage(

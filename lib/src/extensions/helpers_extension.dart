@@ -166,7 +166,8 @@ extension StringUtility2 on String? {
     return false;
   }
 
-  /// Format: {quantity} {unit} ago (5 years ago). YouTube also renders ended
+  /// Format: {quantity} {unit} ago (5 years ago) or the compact "5y ago" /
+  /// "3mo ago" form. YouTube also renders ended
   /// live broadcasts and premieres with a leading status word and/or without
   /// the trailing "ago" (e.g. "Streamed 3 hours ago", "Streamed 2 days").
   DateTime? toDateTime() {
@@ -183,8 +184,27 @@ extension StringUtility2 on String? {
 
     // Drop a leading non-numeric status word (e.g. "Streamed", "Premiered")
     // that isn't part of the "{quantity} {unit}" pattern.
-    if (parts.length == 3 && int.tryParse(parts.first) == null) {
+    if (parts.length >= 2 && !RegExp(r'^\d').hasMatch(parts.first)) {
       parts = parts.skip(1).toList();
+    }
+
+    // YouTube also renders the compact form without a space ("5y", "3mo",
+    // "20h"); split it into "{quantity}" and "{unit}".
+    if (parts.length == 1) {
+      final compact = RegExp(r'^(\d+)(mo|[smhdwy])$').firstMatch(parts.first);
+      if (compact == null) {
+        return null;
+      }
+      final unitName = switch (compact.group(2)!) {
+        's' => 'second',
+        'm' => 'minute',
+        'h' => 'hour',
+        'd' => 'day',
+        'w' => 'week',
+        'mo' => 'month',
+        _ => 'year',
+      };
+      parts = [compact.group(1)!, unitName];
     }
 
     if (parts.length != 2) {
