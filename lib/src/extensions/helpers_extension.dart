@@ -150,6 +150,8 @@ extension StringUtility2 on String? {
       multiplier = 1000;
     } else if (multiplierText == 'M') {
       multiplier = 1000000;
+    } else if (multiplierText == 'B') {
+      multiplier = 1000000000;
     }
 
     return (count * multiplier).toInt();

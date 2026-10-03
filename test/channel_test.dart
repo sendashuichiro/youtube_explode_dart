@@ -111,6 +111,7 @@ void main() {
     Map<String, dynamic> lockup(
       String id,
       List<List<String>> metadataRows, {
+      Map<String, String> labels = const {},
       List<Map<String, dynamic>> badges = const [],
     }) =>
         {
@@ -139,6 +140,12 @@ void main() {
                                 for (final text in row)
                                   {
                                     'text': {'content': text},
+                                    if (labels[text] case final label?)
+                                      'accessibilityLabel': label,
+                                    if (labels[text]?.contains('view') ?? false)
+                                      'leadingIcon': {
+                                        'name': 'PLAY_ARROW_OUTLINED',
+                                      },
                                   },
                               ],
                             },
@@ -203,6 +210,28 @@ void main() {
                           lockup('9bZkp7q19f0', [
                             ['No info'],
                           ]),
+                          // Real responses abbreviate the visible text and
+                          // only the accessibility label says "views".
+                          lockup(
+                            'abbrev00001',
+                            [
+                              ['388K', '11h ago'],
+                            ],
+                            labels: {'388K': '388 thousand views'},
+                          ),
+                          lockup(
+                            'abbrev00002',
+                            [
+                              ['1.4M', '3d ago'],
+                            ],
+                            labels: {'1.4M': '1.4 million views'},
+                          ),
+                          lockup(
+                            'abbrev00003',
+                            [
+                              ['1,234 views', '2d ago'],
+                            ],
+                          ),
                         ],
                       },
                     },
@@ -220,13 +249,20 @@ void main() {
       const Duration(hours: 1, minutes: 4, seconds: 51),
       const Duration(minutes: 2, seconds: 35),
       Duration.zero,
+      Duration.zero,
+      Duration.zero,
+      Duration.zero,
     ]);
     expect(uploads.map((video) => video.videoUploadDate), [
       '5y ago',
       'Streamed 3w ago',
       '',
+      '11h ago',
+      '3d ago',
+      '2d ago',
     ]);
-    expect(uploads.map((video) => video.videoViews), [123, 456, 0]);
+    expect(uploads.map((video) => video.videoViews),
+        [123, 456, 0, 388000, 1400000, 1234]);
   });
 
   test('propagates the current ABC News Live badge through getUploadsFromPage',
