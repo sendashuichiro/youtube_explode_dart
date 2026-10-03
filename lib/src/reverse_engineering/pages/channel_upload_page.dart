@@ -238,26 +238,25 @@ class _InitialData extends InitialData {
       // (旧`metadata/primaryText/...`直下ではない)。views/upload date は
       // `metadata/lockupMetadataViewModel/metadata/contentMetadataViewModel/
       // metadataRows/0/metadataParts`の0番目・1番目にそれぞれ入る。
+      final metadataParts = _lockupMetadataParts(video);
       return ChannelVideo(
         VideoId(video.getJson<String>(
             'rendererContext/commandContext/onTap/innertubeCommand/watchEndpoint/videoId')!),
         video.getJson<String>(
                 'metadata/lockupMetadataViewModel/title/content') ??
             '',
-        video
-                .getJson<String>(
-                    'imageOverlays/0/thumbnailOverlayTimeStatusRenderer/text/simpleText')
-                ?.toDuration() ??
-            Duration.zero,
+        _lockupDuration(video),
         video.getJson<String>(
                 'thumbnailViewModel/thumbnailViewModel/image/sources/0/url') ??
             '',
-        video.getJson<String>(
-                'metadata/lockupMetadataViewModel/metadata/contentMetadataViewModel/metadataRows/0/metadataParts/1/text/content') ??
+        metadataParts
+                .where(
+                    (e) => RegExp(r'\bago$', caseSensitive: false).hasMatch(e))
+                .firstOrNull ??
             '',
-        video
-                .getJson<String>(
-                    'metadata/lockupMetadataViewModel/metadata/contentMetadataViewModel/metadataRows/0/metadataParts/0/text/content')
+        metadataParts
+                .where((e) => RegExp(r'view', caseSensitive: false).hasMatch(e))
+                .firstOrNull
                 .parseInt() ??
             0,
         isLive: _hasLiveBadge(video),
@@ -285,6 +284,53 @@ class _InitialData extends InitialData {
       video.getJson<String>('publishedTimeText/simpleText') ?? '',
       video.getJson<String>('viewCountText/simpleText').parseInt() ?? 0,
     );
+  }
+
+  /// Texts of every metadata part of a `lockupViewModel`. Collaboration
+  /// videos prepend a row listing the channels ("A and 2 more"), which pushes
+  /// the view count and upload date down, so they are matched by content
+  /// rather than by position.
+  List<String> _lockupMetadataParts(JsonMap video) {
+    final rows = video.getJson<List<dynamic>>(
+      'metadata/lockupMetadataViewModel/metadata/contentMetadataViewModel/metadataRows',
+    );
+    if (rows == null) return const [];
+    return [
+      for (final row in rows)
+        if (row is JsonMap)
+          for (final part
+              in row.getJson<List<dynamic>>('metadataParts') ?? const [])
+            if (part is JsonMap)
+              if (part.getJson<String>('text/content') case final text?) text,
+    ];
+  }
+
+  /// Duration badge ("1:04:51") of a `lockupViewModel` thumbnail. It sits in
+  /// the bottom overlay next to the Live badge; the Live badge itself carries
+  /// no duration.
+  Duration _lockupDuration(JsonMap video) {
+    final overlays = video.getJson<List<dynamic>>(
+      'contentImage/thumbnailViewModel/overlays',
+    );
+    if (overlays == null) return Duration.zero;
+    for (final overlay in overlays) {
+      if (overlay is! JsonMap) continue;
+      final badges = overlay.getJson<List<dynamic>>(
+        'thumbnailBottomOverlayViewModel/badges',
+      );
+      if (badges == null) continue;
+      for (final badge in badges) {
+        if (badge is! JsonMap) continue;
+        if (badge.getJson<String>('thumbnailBadgeViewModel/badgeStyle') ==
+            'THUMBNAIL_OVERLAY_BADGE_STYLE_LIVE') {
+          continue;
+        }
+        final duration =
+            badge.getJson<String>('thumbnailBadgeViewModel/text')?.toDuration();
+        if (duration != null) return duration;
+      }
+    }
+    return Duration.zero;
   }
 
   bool _hasLiveBadge(JsonMap video) {

@@ -18,7 +18,8 @@ void main() {
       () {
         final result = 'Streamed 3 hours ago'.toDateTime();
         expect(result, isNotNull);
-        expect(DateTime.now().difference(result!).inHours, greaterThanOrEqualTo(3));
+        expect(DateTime.now().difference(result!).inHours,
+            greaterThanOrEqualTo(3));
       },
     );
 
@@ -31,13 +32,36 @@ void main() {
       () {
         final result = 'Streamed 2 days'.toDateTime();
         expect(result, isNotNull);
-        expect(DateTime.now().difference(result!).inDays, greaterThanOrEqualTo(2));
+        expect(
+            DateTime.now().difference(result!).inDays, greaterThanOrEqualTo(2));
       },
     );
+
+    test('parses the compact format without a space ("5y ago", "3mo ago")', () {
+      final cases = {
+        '30s ago': const Duration(seconds: 30),
+        '10m ago': const Duration(minutes: 10),
+        '20h ago': const Duration(hours: 20),
+        '2d ago': const Duration(days: 2),
+        '3w ago': const Duration(days: 21),
+        '11mo ago': const Duration(days: 330),
+        '5y ago': const Duration(days: 365 * 5),
+        'Streamed 1y ago': const Duration(days: 365),
+      };
+      cases.forEach((label, expected) {
+        final result = label.toDateTime();
+        expect(result, isNotNull, reason: label);
+        final diff = DateTime.now().difference(result!);
+        expect(diff - expected, lessThan(const Duration(seconds: 5)),
+            reason: label);
+        expect(diff, greaterThanOrEqualTo(expected), reason: label);
+      });
+    });
 
     test('returns null instead of throwing for unrecognized short labels', () {
       expect('Streamed live'.toDateTime(), isNull);
       expect('Streamed'.toDateTime(), isNull);
+      expect('5x ago'.toDateTime(), isNull);
     });
 
     test('returns null for null input', () {
