@@ -239,6 +239,7 @@ class _InitialData extends InitialData {
       // `metadata/lockupMetadataViewModel/metadata/contentMetadataViewModel/
       // metadataRows/0/metadataParts`の0番目・1番目にそれぞれ入る。
       final metadataParts = _lockupMetadataParts(video);
+      final texts = [for (final part in metadataParts) part.text];
       return ChannelVideo(
         VideoId(video.getJson<String>(
             'rendererContext/commandContext/onTap/innertubeCommand/watchEndpoint/videoId')!),
@@ -249,16 +250,12 @@ class _InitialData extends InitialData {
         video.getJson<String>(
                 'thumbnailViewModel/thumbnailViewModel/image/sources/0/url') ??
             '',
-        metadataParts
+        texts
                 .where(
                     (e) => RegExp(r'\bago$', caseSensitive: false).hasMatch(e))
                 .firstOrNull ??
             '',
-        metadataParts
-                .where((e) => RegExp(r'view', caseSensitive: false).hasMatch(e))
-                .firstOrNull
-                .parseInt() ??
-            0,
+        _lockupViews(metadataParts),
         isLive: _hasLiveBadge(video),
       );
     }
@@ -286,11 +283,12 @@ class _InitialData extends InitialData {
     );
   }
 
-  /// Texts of every metadata part of a `lockupViewModel`. Collaboration
-  /// videos prepend a row listing the channels ("A and 2 more"), which pushes
-  /// the view count and upload date down, so they are matched by content
-  /// rather than by position.
-  List<String> _lockupMetadataParts(JsonMap video) {
+  /// Every metadata part of a `lockupViewModel` (display text, accessibility
+  /// label and leading icon name). Collaboration videos prepend a row listing
+  /// the channels ("A and 2 more"), which pushes the view count and upload
+  /// date down, so they are matched by content rather than by position.
+  List<({String text, String label, String icon})> _lockupMetadataParts(
+      JsonMap video) {
     final rows = video.getJson<List<dynamic>>(
       'metadata/lockupMetadataViewModel/metadata/contentMetadataViewModel/metadataRows',
     );
@@ -301,8 +299,27 @@ class _InitialData extends InitialData {
           for (final part
               in row.getJson<List<dynamic>>('metadataParts') ?? const [])
             if (part is JsonMap)
-              if (part.getJson<String>('text/content') case final text?) text,
+              if (part.getJson<String>('text/content') case final text?)
+                (
+                  text: text,
+                  label: part.getJson<String>('accessibilityLabel') ?? '',
+                  icon: part.getJson<String>('leadingIcon/name') ?? '',
+                ),
     ];
+  }
+
+  /// View count of a `lockupViewModel`. The visible text is abbreviated
+  /// ("388K", "1.4M") and carries no "views" word; only the accessibility
+  /// label ("388 thousand views") and the play-arrow icon identify it.
+  int _lockupViews(List<({String text, String label, String icon})> parts) {
+    final view = parts
+        .where((e) =>
+            RegExp(r'view', caseSensitive: false).hasMatch(e.text) ||
+            RegExp(r'view', caseSensitive: false).hasMatch(e.label) ||
+            e.icon.startsWith('PLAY_ARROW'))
+        .firstOrNull;
+    if (view == null) return 0;
+    return view.text.replaceAll(',', '').parseIntWithUnits() ?? 0;
   }
 
   /// Duration badge ("1:04:51") of a `lockupViewModel` thumbnail. It sits in
